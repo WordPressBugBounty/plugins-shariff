@@ -2,6 +2,24 @@
 
 == Changelog ==
 
+= 4.6.15 =
+- added Bluesky integration (many thanks to Robert / seyfro )
+
+= 4.6.14 =
+- removed Reddit from the share counts because requests without API keys are blocked now
+- fix to avoid unauthenticated local file inclusion. Many thanks to haidv35
+
+= 4.6.13 =
+- cleanup code (please check the basic options menu. We changed some
+internal names of variables that differ from original WP namings for
+post/page/custom type. This should have been migrated with this update but
+please have a look on your 'baisc options'.  
+- fix possible XSS with the (internal) variabe 'timestamp' (thanks to Ngo Thien An for the hint)
+
+= 4.6.12 =
+- French translation for some service corrected (thanks to Ensam57)
+- additional security fix after code review
+
 = 4.6.11 =
 - security fix
 
