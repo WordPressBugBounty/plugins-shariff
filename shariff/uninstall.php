@@ -6,9 +6,9 @@
  */
 
 // Exit, if uninstall.php was not called from WordPress.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-	die();
-}
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) { die(); }
+// and again the same because the WP Plugin Check does not understand what the line above does ;-)
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 // Delete options (even old ones), remove cron job and clear cache.
 if ( is_multisite() ) {

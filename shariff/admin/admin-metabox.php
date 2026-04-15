@@ -6,10 +6,10 @@
  * @subpackage admin
  */
 
-// Prevent direct calls to admin_menu.php.
-if ( ! class_exists( 'WP' ) ) {
-	die();
-}
+// Prevent direct calls.
+if ( ! class_exists( 'WP' ) ) { die(); }
+// and again the same because the WP Plugin Check does not understand what the line above does ;-)
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 // Call setup function on the post editor screen.
 add_action( 'load-post.php', 'shariff3uu_metabox_setup' );

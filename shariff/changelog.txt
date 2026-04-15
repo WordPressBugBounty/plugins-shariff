@@ -2,6 +2,14 @@
 
 == Changelog ==
 
+= 4.6.16 =
+- tested up to WP 6.9.4
+- added check on ABSPATH because the automated Plugin Check does not
+understand what the check on class WP does
+- added check on BTC to avoid any input that is not a valid address
+- removed input check on flattruser because service has gone more
+than 2 years ago
+
 = 4.6.15 =
 - added Bluesky integration (many thanks to Robert / seyfro )
 

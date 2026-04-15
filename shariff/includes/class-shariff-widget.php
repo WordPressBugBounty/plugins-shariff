@@ -5,6 +5,9 @@
  * @package Shariff Wrapper
  */
 
+// useless because the class provides only includes for the widget but WP Plugin Check does request it as mandatory :-(
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
 /**
  * Class ShariffWidget
  */

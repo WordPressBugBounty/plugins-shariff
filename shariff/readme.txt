@@ -3,8 +3,8 @@ Contributors: starguide, 3UU
 Tags: Shariff, GDPR, DSGVO, share buttons, sharing
 Requires at least: 4.9
 Requires PHP: 7.4
-Tested up to: 6.7
-Stable tag: 4.6.15
+Tested up to: 6.9
+Stable tag: 4.6.17
 License: MIT
 License URI: http://opensource.org/licenses/mit
 
@@ -12,7 +12,12 @@ Shariff provides share buttons that respect the privacy of your visitors and fol
 
 == Description ==
 
-The "original" share buttons automatically transmit data of your visitors to the social network sites as soon as they visit your website. They do not need to click on a share button for this and therefore have no choice, if they want their data to be send. The German computer magazine c't has developed "Shariff" `(ʃɛɹɪf)` that follows the General Data Protection Regulation (GDPR - Regulation (EU) 2016/679). This plugin adapts the Shariff concept and provides an easy to use solution for WordPress. We currently support 29 services in 25 languages: Bitcoin, Buffer, Diaspora, Facebook, Flipboard, LinkedIn, mailto, Mastodon, MeWe, Odnoklassniki, Patreon, PayPal, PayPal.me, Pinterest, Pocket, Printer, Reddit, RSS, SMS, Stumbleupon, Telegram, Threema, Tumblr, Twitter, VK, Wallabag, Weibo, WhatsApp, Xing.
+The "original" share buttons automatically transmit data of your visitors to the social network sites as soon as they visit your website. They do not need to click on a share button for this and therefore have no choice, if they want their data to be send. The German computer magazine c't has developed "Shariff" `(ʃɛɹɪf)` that follows the General Data Protection Regulation (GDPR - Regulation (EU) 2016/679). This plugin adapts the Shariff concept and provides an easy to use solution for WordPress. We currently support
+31 services in 25 languages: 
+Bitcoin, Bluesky, Buffer, Diaspora, Facebook, Flipboard, Info, Linkedin,
+mailto, Mastodon, Mewe, Mix, Odnoklassniki, Patreon, Paypal, Paypal.me,
+Pinterest, Pocket, Printer, Reddit, RSS, SMS, Telegram, Threema, Tumblr,
+Twitter, VK, Wallabag, Weibo, Whatsapp, Xing
 
 For more information about the Shariff project check out the original [GitHub project](https://github.com/heiseonline/shariff) and read about the project itself [c’t information page](http://ct.de/shariff) (in German).
 
@@ -144,6 +149,22 @@ These are bugs or unexpected glitches that we know of, but that do not have an i
 - If the first post on the start page is password protected and Shariff is disabled on protected posts, a widget at the end of the loop will not be rendered.
 
 == Changelog ==
+
+= 4.6.17 =
+- update BTC adress checks to work with recent schemes
+- optimize input checker
+- sanitize short code uses the same checker like admin page now
+- ...and a big thank to Gemini (Google AI), which was a really 
+helpful sparring partner. At least better than the resaecher how 
+provided a false positive proof and did not answered on my questions
+
+= 4.6.16 =
+- tested up to WP 6.9.4
+- added check on ABSPATH because the automated Plugin Check does not
+understand what the check on class WP does 
+- added check on BTC to avoid any input that is not a valid address
+- removed input check on flattruser because service has gone more
+than 2 years ago
 
 = 4.6.15 =
 - added Bluesky integration

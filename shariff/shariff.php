@@ -3,7 +3,7 @@
  * Plugin Name: Shariff Wrapper
  * Plugin URI: https://wordpress.org/plugins-wp/shariff/
  * Description: Shariff provides share buttons that respect the privacy of your visitors and follow the General Data Protection Regulation (GDPR).
- * Version: 4.6.15
+ * Version: 4.6.17
  * Author: Jan-Peter Lambeck & 3UU
  * Author URI: https://wordpress.org/plugins/shariff/
  * License: MIT
@@ -14,9 +14,11 @@
  */
 
 // Prevent direct calls to shariff.php.
-if ( ! class_exists( 'WP' ) ) {
-	die();
-}
+if ( ! class_exists( 'WP' ) ) { die(); }
+// and again the same because the WP Plugin Check does not understand what the line above does ;-)
+if ( ! defined( 'ABSPATH' ) ) exit; 
+
+require_once plugin_dir_path( __FILE__ ) . 'includes/sanitization.php';
 
 // Force the creation as a global variable in order to work with WP-CLI.
 global $shariff3uu_basic, $shariff3uu_design, $shariff3uu_advanced, $shariff3uu_statistic, $shariff3uu;
@@ -34,7 +36,7 @@ $shariff3uu = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_ad
  */
 function shariff3uu_update() {
 	// Adjust code version.
-	$code_version = '4.6.15';
+	$code_version = '4.6.17';
 
 	// Get basic options.
 	$shariff3uu_basic = (array) get_option( 'shariff3uu_basic' );
@@ -85,9 +87,9 @@ $allowed_tags = array(
 	'br'     => array(),
 	// Elements that can be formatted via CSS.
 	'span'   => array(
-		'class' => array(),
-		'style' => array(),
-		'id'    => array(),
+	'class' => array(),
+	'style' => array(),
+	'id'    => array(),
 	),
 	'div'    => array(
 		'class' => array(),
@@ -665,7 +667,7 @@ function shariff3uu_excerpt( $content ) {
 	$shariff3uu = $GLOBALS['shariff3uu'];
 	// Remove headline in post.
 	if ( isset( $shariff3uu['headline'] ) ) {
-		$content = str_replace( wp_strip_all_tags( $shariff3uu['headline'] ), ' ', $content );
+		$content = str_replace( wp_strip_all_tags( strip_hackers($shariff3uu['headline']) ), ' ', $content );
 	}
 	// Add shariff before the excerpt, if option checked in the admin menu.
 	if ( isset( $shariff3uu['add_before']['excerpt'] ) && 1 === $shariff3uu['add_before']['excerpt'] ) {
@@ -866,12 +868,26 @@ add_shortcode( 'shariff', 'shariff3uu_render' );
  * @return string|null The rendered HTML shorttag or null if a disable condition is met.
  */
 function shariff3uu_render( $atts ) {
-	// Get options.
+	// Get options as defaults from the DB.
 	$shariff3uu_basic     = (array) get_option( 'shariff3uu_basic' );
 	$shariff3uu_design    = (array) get_option( 'shariff3uu_design' );
 	$shariff3uu_advanced  = (array) get_option( 'shariff3uu_advanced' );
 	$shariff3uu_statistic = (array) get_option( 'shariff3uu_statistic' );
-	$shariff3uu           = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_advanced, $shariff3uu_statistic );
+    
+	// merge to a big array
+	$temp_db_options = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_advanced, $shariff3uu_statistic );
+
+	// compare shortcode atts with the options from the DB
+ 	// if not set in shortcode, take the DB as default value
+	$raw_atts = shortcode_atts( $temp_db_options, $atts, 'shariff' );
+
+	// clean all vars. It is a pity but with WP you can not trust DB content
+	$shariff3uu = array_merge(
+        	shariff3uu_basic_sanitize( $raw_atts ),
+	        shariff3uu_design_sanitize( $raw_atts ),
+	        shariff3uu_advanced_sanitize( $raw_atts ),
+	        shariff3uu_statistic_sanitize( $raw_atts )
+	);
 
 	if ( array_key_exists( 'dynamic_css', $shariff3uu ) && ! empty( $shariff3uu['dynamic_css'] ) ) {
 		$dynamic_css = $shariff3uu['dynamic_css'];
@@ -962,12 +978,12 @@ function shariff3uu_render( $atts ) {
 
 	// Cleans up the headline in case it was used in a shorttag.
 	if ( array_key_exists( 'headline', $atts ) ) {
-		$atts['headline'] = wp_kses( $atts['headline'], $GLOBALS['allowed_tags'] );
+		$atts['headline'] = wp_kses( strip_hackers($atts['headline']), $GLOBALS['allowed_tags'] );
 	}
 
 	// Cleans up the alternative headline in case it was used in a shorttag.
 	if ( array_key_exists( 'headline_zero', $atts ) ) {
-		$atts['headline_zero'] = wp_kses( $atts['headline_zero'], $GLOBALS['allowed_tags'] );
+		$atts['headline_zero'] = wp_kses( strip_hackers($atts['headline_zero']), $GLOBALS['allowed_tags'] );
 	}
 
 	// Remove previous added inline styles to prevent duplications.
@@ -1015,7 +1031,7 @@ function shariff3uu_render( $atts ) {
 
 	// Sets the share title.
 	if ( array_key_exists( 'title', $atts ) ) {
-		$share_title = rawurlencode( wp_strip_all_tags( $atts['title'] ) );
+		$share_title = rawurlencode( wp_strip_all_tags( strip_hackers($atts['title']) ) );
 	} else {
 		$share_title = rawurlencode( wp_strip_all_tags( html_entity_decode( get_the_title(), ENT_COMPAT, 'UTF-8' ) ) );
 	}
@@ -1036,12 +1052,12 @@ function shariff3uu_render( $atts ) {
 	if ( array_key_exists( 'style', $atts ) || array_key_exists( 'cssclass', $atts ) ) {
 		$output .= '<div class="ShariffSC';
 		if ( array_key_exists( 'cssclass', $atts ) ) {
-			$output .= ' ' . esc_html( $atts['cssclass'] ) . '"';
+			$output .= ' ' . esc_html( strip_hackers($atts['cssclass']) ) . '"';
 		} else {
 			$output .= '"';
 		}
 		if ( array_key_exists( 'style', $atts ) ) {
-			$output .= ' style="' . esc_html( $atts['style'] ) . '"';
+			$output .= ' style="' . esc_html( strip_hackers($atts['style']) ) . '"';
 		}
 		$output .= '>';
 	}
@@ -1091,11 +1107,11 @@ function shariff3uu_render( $atts ) {
 	$output .= '<div class="shariff';
 	// Alignment.
 	if ( array_key_exists( 'align', $atts ) && 'none' !== $atts['align'] ) {
-		$output .= ' shariff-align-' . esc_attr( $atts['align'] );
+		$output .= ' shariff-align-' . esc_attr( strip_hackers($atts['align']) );
 	}
 	// Alignment widget.
 	if ( array_key_exists( 'align_widget', $atts ) && 'none' !== $atts['align_widget'] ) {
-		$output .= ' shariff-widget-align-' . esc_attr( $atts['align_widget'] );
+		$output .= ' shariff-widget-align-' . esc_attr( strip_hackers($atts['align_widget']) );
 	}
 	// Button Stretch.
 	// phpcs:ignore
@@ -1111,7 +1127,7 @@ function shariff3uu_render( $atts ) {
 	// Adds information for share count request.
 	if ( array_key_exists( 'backend', $atts ) && 'on' === $atts['backend'] ) {
 		// Share url.
-		$output .= ' data-url="' . esc_html( $share_url ) . '"';
+		$output .= ' data-url="' . esc_html( strip_hackers($share_url) ) . '"';
 		// Timestamp for cache.
 		$output .= ' data-timestamp="' . esc_attr( $post_timestamp ) . '"';
 		// Hides share counts when they are zero.

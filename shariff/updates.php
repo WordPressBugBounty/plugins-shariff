@@ -8,9 +8,9 @@
  */
 
 // Prevent direct calls.
-if ( ! class_exists( 'WP' ) ) {
-	die();
-}
+if ( ! class_exists( 'WP' ) ) { die(); }
+// and again the same because the WP Plugin Check does not understand what the line above does ;-)
+if ( ! defined( 'ABSPATH' ) ) exit; 
 
 /**
  * Migration < 2.3

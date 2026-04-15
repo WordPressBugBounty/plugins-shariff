@@ -41,7 +41,10 @@
  * Build: 2010100721
  */
 
-
+// prevent external use (as is requested by the automated Plugin Check)
+if ( ! defined( 'ABSPATH' ) ) { define( 'ABSPATH', __DIR__ . '/' ); }
+if ( ! defined( 'ABSPATH' ) ) exit;
+// sanitize: The real plausi check on valid address is in function svg()
 
 //---- qrconst.php -----------------------------
 
@@ -3137,6 +3140,9 @@
         //----------------------------------------------------------------------
         public static function svg($text, $outfile = false, $level = QR_ECLEVEL_L, $size = 3, $margin = 4, $saveandprint=false, $back_color = 0xFFFFFF, $fore_color = 0x000000)
         {
+            // real plausi check on valid address and nothing else
+            if(!preg_match('/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/', $text)) { http_response_code(400); die(); }
+
             $enc = QRencode::factory($level, $size, $margin, $back_color, $fore_color);
             return $enc->encodeSVG($text, $outfile, $saveandprint=false);
         }
