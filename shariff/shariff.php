@@ -3,7 +3,7 @@
  * Plugin Name: Shariff Wrapper
  * Plugin URI: https://wordpress.org/plugins-wp/shariff/
  * Description: Shariff provides share buttons that respect the privacy of your visitors and follow the General Data Protection Regulation (GDPR).
- * Version: 4.6.18
+ * Version: 4.6.19
  * Author: Jan-Peter Lambeck & 3UU
  * Author URI: https://wordpress.org/plugins/shariff/
  * License: MIT
@@ -36,7 +36,7 @@ $shariff3uu = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_ad
  */
 function shariff3uu_update() {
 	// Adjust code version.
-	$code_version = '4.6.18';
+	$code_version = '4.6.19';
 
 	// Get basic options.
 	$shariff3uu_basic = (array) get_option( 'shariff3uu_basic' );
@@ -158,6 +158,81 @@ function shariff3uu_include_metabox() {
 if ( ! isset( $shariff3uu['disable_metabox'] ) || isset( $shariff3uu['disable_metabox'] ) && 1 !== $shariff3uu['disable_metabox'] ) {
 	add_action( 'init', 'shariff3uu_include_metabox' );
 }
+
+/*
+ * only super admins are allowed to add/change risky attributes like html/styles
+*/
+function final_shariff_security_check( $data, $postarr ) {
+    // super admins are allowed to edit HTML/CSS. So go ahead.
+    if ( is_super_admin() || $data['post_type'] === 'revision' ) {
+        return $data;
+    }
+
+    $new_content = $data['post_content'];
+    $post_id = isset($postarr['ID']) ? $postarr['ID'] : 0;
+
+    // get the old content with the pre-authorized shorttags
+    // BTW: Here is an problem with shorttags that are inserted while shariff was deactivated.
+    // We can not trust the DB in WP :-( But this will get checks on dangerous content in the render function.
+#    global $wpdb;
+#    $old_content = $post_id ? $wpdb->get_var( $wpdb->prepare( "SELECT post_content FROM $wpdb->posts WHERE ID = %d", $post_id ) ) : '';
+    $old_post = $post_id ? get_post( $post_id ) : null;
+    $old_content = $old_post ? $old_post->post_content : '';
+    
+    $allowed_configs = [];
+    if ( ! empty( $old_content ) ) {
+        preg_match_all( '/\[shariff(\s+[^\]]+)?\]/i', $old_content, $old_matches );
+        foreach ( $old_matches[1] as $attr_string ) {
+            $parsed = shortcode_parse_atts( stripslashes( trim( $attr_string ) ) );
+            $parsed_array = is_array( $parsed ) ? $parsed : [];
+            ksort( $parsed_array );
+            $allowed_configs[] = $parsed_array;
+        }
+    }
+
+    // get all new shariff shortcodes
+    preg_match_all( '/\[shariff(\s+[^\]]+)?\]/i', $new_content, $new_matches );
+
+    foreach ( $new_matches[1] as $attr_string ) {
+        $new_parsed = shortcode_parse_atts( stripslashes( trim( $attr_string ) ) );
+        $new_atts = is_array( $new_parsed ) ? $new_parsed : [];
+        ksort( $new_atts );
+
+        if ( isset( $new_atts['headline'] ) || isset( $new_atts['style'] ) ) {
+            $is_authorized = false;
+            foreach ( $allowed_configs as $old_atts ) {
+                if ( $new_atts === $old_atts ) {
+                    $is_authorized = true;
+                    break;
+                }
+            }
+
+            if ( ! $is_authorized ) {
+                $msg = '<strong>Sicherheits-Check:</strong> Diese Shariff-Konfiguration ist nicht erlaubt oder wurde ver&auml;ndert. Bitte wende dich an einen Administrator.';
+
+                // REST API (Gutenberg & Co.)
+                if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+                    status_header( 403 );
+                    wp_send_json_error( array( 'message' => $msg ) );
+                    exit;
+                }
+
+                // AJAX (Quick Edit, Page Builder etc.)
+                if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+                    wp_send_json_error( $msg );
+                    exit;
+                }
+
+                // classic editor / standard HTTP post
+                wp_die( $msg, 'Aktion verweigert', array( 'back_link' => true ) );
+            }
+        }
+    }
+
+    return $data;
+}
+add_filter( 'wp_insert_post_data', 'final_shariff_security_check', 10, 2 );
+
 
 /**
  * Add meta links (settings and support forum) to our entry on the plugin page.

@@ -2,6 +2,13 @@
 
 == Changelog ==
 
+= 4.6.19 =
+- restrikt CSS styles in shortcode attributes to superadmins as usual in WP
+- code cleanup: removed outdated admin-notices
+
+= 4.6.18 =
+- fix broken admin notice
+
 = 4.6.17 =
 - update BTC adress checks to work with recent schemes
 - optimize input checker

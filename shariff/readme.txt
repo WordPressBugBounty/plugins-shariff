@@ -4,7 +4,7 @@ Tags: Shariff, GDPR, DSGVO, share buttons, sharing
 Requires at least: 4.9
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 4.6.18
+Stable tag: 4.6.19
 License: MIT
 License URI: http://opensource.org/licenses/mit
 
@@ -150,8 +150,14 @@ These are bugs or unexpected glitches that we know of, but that do not have an i
 
 == Changelog ==
 
+
+= 4.6.19 =
+- restrikt CSS styles in shortcode attributes to superadmins as usual in WP
+- code cleanup: removed outdated admin-notices
+
 = 4.6.18 =
 - fix broken admin notice
+- add wordfence verification
 
 = 4.6.17 =
 - update BTC adress checks to work with recent schemes
@@ -261,35 +267,6 @@ please have a look on your 'baisc options'.
 - fixed a conflict with another plugin (thanks to David, @daveshine)
 - tested with WordPress 5.1
 
-= 4.5.3 =
-- removed LinkedIn Share Counts due to LinkedIn removing them completely
-- removed GooglePlus Share Counts due to Google shutting GooglePlus down
-- removed OpenShareCount due to the service having shut down
-- removed NewShareCount due to the service having shut down
-- removed Mastodon temporarily until a new working solution is available
-- deprecated GooglePlus as a service, will be removed with the next release
-- added TwitCount (twitcount.com) as an alternative for Twitter share counts
-- updated to Facebook Graph API v3.2
-- updated to WordPress Coding Standards 2.0
-- corrected minor typos
-- added the new logo thanks to Philipp Wildfeuer (@phil_sauvage)
-
-= 4.5.2 =
-- added support for share count requests of multilingual sites
-- updated button translations for Twitter and Pinterest (thanks to Jessica, @jess78)
-- updated to Facebook Graph API v3.0
-
-= 4.5.1 =
-- added support for the new WordPress Privacy Policy Guide added in 4.9.6
-- minor css adjustments
-- minor bug fixes
-
-= 4.5.0 =
-- new option to add Shariff to custom WordPress hooks
-- new option to support multilingual sites using WPML and other plugins
-- new support for WooCommerce products on the ranking table
-- new option to show different headlines based on share counts
-- updated button languages, now supporting 25 languages
-- fixed a bug causing share counts to not being displayed properly
-
 The complete changelog can be found here: https://plugins.svn.wordpress.org/shariff/trunk/changelog.txt
+
+wordfence verify: 4k4bvof9mbrebb94btvbpnaxmjw47g1b
