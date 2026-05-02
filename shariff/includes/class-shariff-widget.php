@@ -87,7 +87,9 @@ class Shariff_Widget extends WP_Widget {
 
 		// Checks the input values.
 		$instance['shariff-title'] = (string) wp_strip_all_tags( $new_instance['shariff-title'] );
-		$instance['shariff-tag']   = (string) wp_kses( $new_instance['shariff-tag'], $GLOBALS['allowed_tags'] );
+# rtz260501: Das ist Bloedsinn hier. Es wird der Name des Short-Tag geprueft, kein HTLM/CSS tag
+#		$instance['shariff-tag']   = (string) wp_kses( $new_instance['shariff-tag'], $GLOBALS['allowed_tags'] );
+		$instance['shariff-tag']   = sanitize_text_field( strip_hackers( $new_instance['shariff-tag'] ) );
 
 		// Saves the config.
 		return $instance;
@@ -111,8 +113,7 @@ class Shariff_Widget extends WP_Widget {
 		if ( empty( $instance['shariff-title'] ) ) {
 			$title = '';
 		} else {
-			apply_filters( 'shariff_title', $instance['shariff-title'] );
-			$title = $instance['shariff-title'];
+			$title = wp_strip_all_tags( apply_filters( 'shariff_title', $instance['shariff-title'] ) );
 		}
 		if ( ! empty( $title ) ) {
 			echo wp_kses( $args['before_title'] . $title . $args['after_title'], $GLOBALS['allowed_tags'] );

@@ -138,14 +138,14 @@ function shariff3uu_save_metabox_data( $post_id, $post ) {
 
 			// Save meta box media.
 			if ( isset( $_POST['shariff_metabox_media'] ) && ! empty( $_POST['shariff_metabox_media'] ) ) {
-				update_post_meta( $post_id, 'shariff_metabox_media', esc_url_raw( wp_unslash( $_POST['shariff_metabox_media'] ) ) );
+				update_post_meta( $post_id, 'shariff_metabox_media', esc_url_raw( strip_hackers( wp_unslash( $_POST['shariff_metabox_media'] ) ) ) );
 			} else {
 				delete_post_meta( $post_id, 'shariff_metabox_media' );
 			}
 
 			// Save meta box shortcode.
 			if ( isset( $_POST['shariff_metabox'] ) && ! empty( $_POST['shariff_metabox'] ) ) {
-				update_post_meta( $post_id, 'shariff_metabox', wp_kses( wp_unslash( $_POST['shariff_metabox'] ), $GLOBALS['allowed_tags'] ) );
+				update_post_meta( $post_id, 'shariff_metabox', sanitize_text_field( strip_hackers( wp_unslash( $_POST['shariff_metabox'] ) ) ) );
 			} else {
 				delete_post_meta( $post_id, 'shariff_metabox' );
 			}

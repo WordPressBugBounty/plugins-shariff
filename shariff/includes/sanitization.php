@@ -116,10 +116,10 @@ function shariff3uu_design_sanitize( $input ) {
 		$valid['vertical'] = isset( $input['vertical'] ) ? 1 : 0;		
 	}
 	if ( isset( $input['align'] ) ) {
-		$valid['align'] = in_array($input['align'], ['left', 'center', 'right']) ? $input['align'] : 'left';
+		$valid['align'] = in_array($input['align'], ['left', 'center', 'right'], true ) ? $input['align'] : 'left';
 	}
 	if ( isset( $input['align_widget'] ) ) {
-		$valid['align_widget'] = in_array($input['align_widget'], ['left', 'center', 'right']) ? $input['align_widget'] : 'left';
+		$valid['align_widget'] = in_array($input['align_widget'], ['left', 'center', 'right'], true ) ? $input['align_widget'] : 'left';
 	}
 	if ( isset( $input['style'] ) ) {
 		$valid['style'] = sanitize_text_field( strip_hackers($input['style']) ); 
@@ -241,7 +241,6 @@ function shariff3uu_statistic_sanitize( $input ) {
           $valid['automaticcache'] = absint( $input['automaticcache'] );
 	}
 	if ( isset( $input['fb_id'] ) ) {
-	# $valid['fb_id'] = absint( $input['fb_id'] );
           $valid['fb_id'] = preg_replace( '/[^0-9]/', '', $input['fb_id'] );
 	}
 	if ( isset( $input['fb_secret'] ) ) {
@@ -250,6 +249,12 @@ function shariff3uu_statistic_sanitize( $input ) {
 	}
 	if ( isset( $input['ttl'] ) ) {
           $valid['ttl'] = absint( $input['ttl'] );
+          // Protect users from themselves
+          if ( $valid['ttl'] < 60 ) {
+              $valid['ttl'] = '';
+          } elseif ( $valid['ttl'] > 7200 ) {
+             $valid['ttl'] = 7200 ;
+          }
 	}
 	if ( isset( $input['disable_dynamic_cache'] ) ) {
 	  $valid['disable_dynamic_cache'] = isset( $input['disable_dynamic_cache'] ) ? 1 : 0;
@@ -269,8 +274,7 @@ function shariff3uu_statistic_sanitize( $input ) {
         }
 
 	if ( isset( $input['external_host'] ) ) {
-		$host = strip_hackers( $input['external_host'] );
-		$valid['external_host'] = str_replace( ' ', '', rtrim( esc_url_raw( $input['external_host'], '/' ) ) );
+		$valid['external_host'] = str_replace( ' ', '', rtrim( esc_url_raw( strip_hackers( $input['external_host'] ), '/' ) ) );
 	}
 	if ( isset( $input['external_direct'] ) ) {
 		$valid['external_direct'] = isset( $input['external_direct'] ) ? 1 : 0;
@@ -279,17 +283,6 @@ function shariff3uu_statistic_sanitize( $input ) {
 		$valid['subapi'] = isset( $input['subapi'] ) ? 1 : 0;
 	}
 	
-	// Protect users from themselves.
-	if ( isset( $input['ttl'] ) ) {
-	  $ttl = absint( $input['ttl'] );
-	  if ( $ttl < 60 ) { 
-	    $valid['ttl'] = ''; 
-          } elseif ( $ttl > 7200 ) {
-            $valid['ttl'] = '7200';
-          } else {
-            $valid['ttl'] = (string) $ttl;
-          }
-       }
 	// Remove empty elements.
 	$valid = array_filter( $valid );
 

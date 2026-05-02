@@ -18,7 +18,16 @@ $shariff3uu_services_backend = array( 'facebook', 'pinterest', 'tumblr', 'vk', '
 // Adds the actions for the admin page.
 add_action( 'admin_menu', 'shariff3uu_add_admin_menu' );
 add_action( 'admin_init', 'shariff3uu_options_init' );
-add_action( 'init', 'shariff_init_locale' );
+
+# findet jetzt via https://translate.wordpress.org/projects/wp-plugins/shariff statt 
+# add_action( 'init', 'shariff_init_locale' );
+#
+#/** Initialize translations. */
+#function shariff_init_locale() {
+#       if ( function_exists( 'load_plugin_textdomain' ) ) {
+#               load_plugin_textdomain( 'shariff' );
+#       }
+#}
 
 /**
  * Scripts and styles for admin pages e.g. info notice.
@@ -1837,10 +1846,10 @@ function shariff3uu_ranking_section_callback() {
 	$services = array();
 
 	// Amount of posts - set to 100 if not set.
-	if ( isset( $GLOBALS['shariff3uu']['ranking'] ) && absint( $GLOBALS['shariff3uu']['ranking'] ) > '0' ) {
+	if ( isset( $GLOBALS['shariff3uu']['ranking'] ) && absint( $GLOBALS['shariff3uu']['ranking'] ) > 0 ) {
 		$numberposts = absint( $GLOBALS['shariff3uu']['ranking'] );
 	} else {
-		$numberposts = '100';
+		$numberposts = 100 ;
 	}
 
 	// Set arguments for wp_get_recent_posts().
@@ -1867,7 +1876,7 @@ function shariff3uu_ranking_section_callback() {
 				if ( isset( $share_counts['total'] ) ) {
 					$total = $share_counts['total'];
 				} else {
-					$total = '0';
+					$total = 0 ;
 				}
 			} else {
 				$share_counts = array();
@@ -1930,9 +1939,9 @@ function shariff3uu_ranking_section_callback() {
 	echo '<div style="display:table-cell;border:1px solid;padding:10px;font-weight:bold">' . esc_html__( 'Total', 'shariff' ) . '</div>';
 	echo '</div>';
 	// Posts.
-	$rank = '0';
+	$rank = 0 ;
 	foreach ( $posts as $post => $value ) {
-		$rank ++;
+		$rank++;
 		echo '<div style="display:table-row">';
 		echo '<div style="display:table-cell;border:1px solid;padding:10px;text-align:center">' . absint( $rank ) . '</div>';
 		echo '<div style="display:table-cell;border:1px solid;padding:10px"><a href="' . esc_url( $value['url'] ) . '" target="_blank">' . esc_html( wp_strip_all_tags( $value['title'] ) ) . '</a></div>';
@@ -1984,7 +1993,7 @@ function shariff3uu_ranking_section_callback() {
 				if ( isset( $share_counts['total'] ) ) {
 					$total = $share_counts['total'];
 				} else {
-					$total = '0';
+					$total = 0 ;
 				}
 			} else {
 				$share_counts = array();
@@ -2044,9 +2053,9 @@ function shariff3uu_ranking_section_callback() {
 	echo '<div style="display:table-cell;border:1px solid;padding:10px;font-weight:bold">' . esc_html__( 'Total', 'shariff' ) . '</div>';
 	echo '</div>';
 	// Pages.
-	$rank = '0';
+	$rank = 0 ;
 	foreach ( $posts as $post => $value ) {
-		$rank ++;
+		$rank++;
 		echo '<div style="display:table-row">';
 		echo '<div style="display:table-cell;border:1px solid;padding:10px;text-align:center">' . absint( $rank ) . '</div>';
 		echo '<div style="display:table-cell;border:1px solid;padding:10px"><a href="' . esc_url( $value['url'] ) . '" target="_blank">' . esc_html( $value['title'] ) . '</a></div>';
@@ -2098,7 +2107,7 @@ function shariff3uu_ranking_section_callback() {
 				if ( isset( $share_counts['total'] ) ) {
 					$total = $share_counts['total'];
 				} else {
-					$total = '0';
+					$total = 0 ;
 				}
 			} else {
 				$share_counts = array();
@@ -2159,9 +2168,9 @@ function shariff3uu_ranking_section_callback() {
 		echo '<div style="display:table-cell;border:1px solid;padding:10px;font-weight:bold">' . esc_html__( 'Total', 'shariff' ) . '</div>';
 		echo '</div>';
 		// Pages.
-		$rank = '0';
+		$rank = 0 ;
 		foreach ( $posts as $post => $value ) {
-			$rank ++;
+			$rank++;
 			echo '<div style="display:table-row">';
 			echo '<div style="display:table-cell;border:1px solid;padding:10px;text-align:center">' . absint( $rank ) . '</div>';
 			echo '<div style="display:table-cell;border:1px solid;padding:10px"><a href="' . esc_url( $value['url'] ) . '" target="_blank">' . esc_html( $value['title'] ) . '</a></div>';
@@ -2206,10 +2215,10 @@ function shariff3uu_options_page() {
 	// phpcs:ignore
 	if ( isset( $_GET['tab'] ) ) {
 		// phpcs:ignore
-		$active_tab = $_GET['tab'];
-	} else {
-		$active_tab = 'shariff3uu_basic';
+		$allowed_tabs = [ 'shariff3uu_basic', 'shariff3uu_design', 'shariff3uu_advanced', 'shariff3uu_statistic', 'shariff3uu_help', 'shariff3uu_status', 'shariff3uu_ranking' ];
+		$active_tab = in_array( $_GET['tab'], $allowed_tabs, true ) ? $_GET['tab'] : 'shariff3uu_basic';
 	}
+	else{ $active_tab = 'shariff3uu_basic'; }
 
 	// Tabs.
 	echo '<h2 class="nav-tab-wrapper">';

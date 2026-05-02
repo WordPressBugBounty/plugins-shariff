@@ -185,7 +185,7 @@ function shariff_removeoldcachedir() {
  * @param string $directory Path to Shariff cache directory.
  */
 function shariff_removeoldfiles( $directory ) {
-	foreach ( glob( '{$directory}/Shariff* ' ) as $file ) {
+	foreach ( glob( $directory . '/Shariff*' ) as $file ) {
 		if ( is_dir( $file ) ) {
 			shariff_removeoldfiles( $file );
 		} elseif ( substr( $file, -4 ) === '.dat' ) {
@@ -254,6 +254,7 @@ if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['ver
 			}
 		}
 	}
+	$shariff3uu['version'] = '4.2.0';
 }
 
 /**
@@ -285,8 +286,8 @@ if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['ver
                 unset($shariff3uu_basic['add_after']['posts_blogpage']);
         }
         if ( isset( $shariff3uu_basic['add_after']['pages'] ) ) {
-                $shariff3uu_basic['add_after']['page'] = $shariff3uu_basic['add_after']['pages'];
-                unset($shariff3uu_basic['add_after']['pages']);
+                $shariff3uu_basic['add_after']['page'] = $shariff3uu_basic['']['pages'];
+                unset($shariff3uu_basic['']['pages']);
         }
 
         if ( isset( $shariff3uu_basic['add_before']['posts'] ) ) {

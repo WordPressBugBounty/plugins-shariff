@@ -3,7 +3,7 @@
  * Plugin Name: Shariff Wrapper
  * Plugin URI: https://wordpress.org/plugins-wp/shariff/
  * Description: Shariff provides share buttons that respect the privacy of your visitors and follow the General Data Protection Regulation (GDPR).
- * Version: 4.6.19
+ * Version: 4.6.20
  * Author: Jan-Peter Lambeck & 3UU
  * Author URI: https://wordpress.org/plugins/shariff/
  * License: MIT
@@ -36,7 +36,7 @@ $shariff3uu = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_ad
  */
 function shariff3uu_update() {
 	// Adjust code version.
-	$code_version = '4.6.19';
+	$code_version = '4.6.20';
 
 	// Get basic options.
 	$shariff3uu_basic = (array) get_option( 'shariff3uu_basic' );
@@ -208,7 +208,7 @@ function final_shariff_security_check( $data, $postarr ) {
             }
 
             if ( ! $is_authorized ) {
-                $msg = '<strong>Sicherheits-Check:</strong> Diese Shariff-Konfiguration ist nicht erlaubt oder wurde ver&auml;ndert. Bitte wende dich an einen Administrator.';
+                $msg = '<strong>Security Check:</strong> This Shariff configuration is not allowed or has been modified. Please contact an administrator.';
 
                 // REST API (Gutenberg & Co.)
                 if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
@@ -255,12 +255,6 @@ function shariff3uu_meta_links( $links, $file ) {
 }
 add_filter( 'plugin_row_meta', 'shariff3uu_meta_links', 10, 2 );
 
-/** Initialize translations. */
-function shariff_init_locale() {
-	if ( function_exists( 'load_plugin_textdomain' ) ) {
-		load_plugin_textdomain( 'shariff' );
-	}
-}
 
 /** Register the wp rest api route and sanitize the input */
 function shariff3uu_sanitize_api() {
@@ -345,41 +339,41 @@ function shariff3uu_share_counts( WP_REST_Request $request ) {
 	if ( isset( $shariff3uu['ttl'] ) ) {
 		$ttl = absint( $shariff3uu['ttl'] );
 		// Make sure ttl is a reasonable number.
-		if ( $ttl < '61' ) {
-			$ttl = '60';
-		} elseif ( $ttl > '7200' ) {
-			$ttl = '7200';
+		if ( $ttl < 61 ) {
+			$ttl =  60 ;
+		} elseif ( $ttl > 7200 ) {
+			$ttl =  7200 ;
 		}
 	} else {
 		// Else set it to new default (five minutes).
-		$ttl = '300';
+		$ttl =  300 ;
 	}
 
 	// Adjust ttl based on the post age.
 	if ( isset( $timestamp ) && ( ! isset( $shariff3uu['disable_dynamic_cache'] ) || ( isset( $shariff3uu['disable_dynamic_cache'] ) && 1 !== $shariff3uu['disable_dynamic_cache'] ) ) ) {
 		// The timestamp represents the last time the post or page was modified.
 		$post_time    = intval( $timestamp );
-		$current_time = current_time( 'timestamp', true );
+		$current_time = time(); #rtz current_time( 'timestamp', true );
 		$post_age     = round( abs( $current_time - $post_time ) );
-		if ( $post_age > '0' ) {
+		if ( $post_age > 0 ) {
 			$post_age_days = round( $post_age / 60 / 60 / 24 );
 			// Make sure ttl base is not getting too high.
-			if ( $ttl > '300' ) {
-				$ttl = '300';
+			if ( $ttl >  300  ) {
+				$ttl =  300 ;
 			}
 			$ttl = round( ( $ttl + $post_age_days * 3 ) * ( $post_age_days * 2 ) );
 		}
 
 		// Set minimum ttl to 60 seconds and maximum ttl to one week.
-		if ( $ttl < '60' ) {
-			$ttl = '60';
-		} elseif ( $ttl > '604800' ) {
-			$ttl = '604800';
+		if ( $ttl <  60  ) {
+			$ttl =  60 ;
+		} elseif ( $ttl >  604800 ) {
+			$ttl = 604800 ;
 		}
 
 		// In case we get a timestamp older than 01.01.2000 or for example a 0, use a reasonable default value of five minutes.
-		if ( $post_time < '946684800' ) {
-			$ttl = '300';
+		if ( $post_time < 946684800 ) {
+			$ttl =  300 ;
 		}
 	}
 
@@ -406,7 +400,7 @@ function shariff3uu_share_counts( WP_REST_Request $request ) {
 	// Check if we need to update.
 	if ( get_transient( $post_hash ) !== false ) {
 		// Check timestamp.
-		$diff = current_time( 'timestamp', true ) - $old_share_counts['timestamp'];
+		$diff = time() - $old_share_counts['timestamp'];
 		if ( $diff > $ttl ) {
 			$need_update = true;
 		}
@@ -439,7 +433,7 @@ function shariff3uu_share_counts( WP_REST_Request $request ) {
 		// Decode response.
 		$share_counts = json_decode( $response, true );
 		// Save transient.
-		set_transient( $post_hash, $share_counts, '604800' );
+		set_transient( $post_hash, $share_counts, 604800 );
 		// Offer a hook to work with the share counts.
 		do_action( 'shariff_share_counts', $share_counts );
 	} else {
@@ -514,7 +508,7 @@ function shariff3uu_fetch_sharecounts( $service_array, $old_share_counts, $post_
 	// Save transient, if we have counts.
 	if ( isset( $share_counts ) ) {
 		// Add current timestamp and url.
-		$share_counts['timestamp'] = current_time( 'timestamp', true );
+		$share_counts['timestamp'] = time(); #rtz current_time( 'timestamp', true );
 		$share_counts['url']       = $post_url_raw;
 		// Combine different set of services.
 		if ( get_transient( $post_hash ) !== false ) {
@@ -522,7 +516,7 @@ function shariff3uu_fetch_sharecounts( $service_array, $old_share_counts, $post_
 			$share_counts  = array_merge( $other_request, $share_counts );
 		}
 		// Save transient.
-		set_transient( $post_hash, $share_counts, '604800' );
+		set_transient( $post_hash, $share_counts, 604800 );
 		// Offer a hook to work with the share counts.
 		do_action( 'shariff_share_counts', $share_counts );
 		// Update info.
@@ -542,10 +536,10 @@ function shariff3uu_fetch_sharecounts( $service_array, $old_share_counts, $post_
  */
 function shariff3uu_fill_cache() {
 	// Amount of posts - set to 100 if not set.
-	if ( isset( $GLOBALS['shariff3uu']['ranking'] ) && absint( $GLOBALS['shariff3uu']['ranking'] ) > '0' ) {
+	if ( isset( $GLOBALS['shariff3uu']['ranking'] ) && absint( $GLOBALS['shariff3uu']['ranking'] ) > 0 ) {
 		$numberposts = absint( $GLOBALS['shariff3uu']['ranking'] );
 	} else {
-		$numberposts = '100';
+		$numberposts = 100 ;
 	}
 
 	// Avoid errors if no services are given - instead use the default set of services.
@@ -1636,7 +1630,7 @@ function shariff3uu_render( $atts ) {
 		$output = '<span class="shariff" data-services="totalnumber" data-url="' . $share_url . '"';
 		// Adds the external api.
 		if ( isset( $shariff3uu['external_host'] ) && ! empty( $shariff3uu['external_host'] ) && isset( $shariff3uu['external_direct'] ) ) {
-			$output .= ' data-backendurl="' . $shariff3uu['external_host'] . '"';
+			$output .= ' data-backendurl="' . esc_attr($shariff3uu['external_host']) . '"';
 		}
 		$output .= '><span class="shariff-totalnumber">' . absint( $share_counts['total'] ) . '</span></span>';
 	}

@@ -4,7 +4,7 @@ Tags: Shariff, GDPR, DSGVO, share buttons, sharing
 Requires at least: 4.9
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 4.6.19
+Stable tag: 4.6.20
 License: MIT
 License URI: http://opensource.org/licenses/mit
 
@@ -150,6 +150,13 @@ These are bugs or unexpected glitches that we know of, but that do not have an i
 
 == Changelog ==
 
+= 4.6.20 =
+- removed useless init for translationk
+- use PHP time() instead of old current_time('timestamp', true) to avoid
+confusion with newer kinds of WP time functions
+- cleanup numbers that has been set as strings too
+- Fix: proper check auf external_host var
+- Fix: some very old migrations fit for PHP8
 
 = 4.6.19 =
 - restrikt CSS styles in shortcode attributes to superadmins as usual in WP
