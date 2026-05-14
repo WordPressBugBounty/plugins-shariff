@@ -3,7 +3,7 @@
  * Plugin Name: Shariff Wrapper
  * Plugin URI: https://wordpress.org/plugins-wp/shariff/
  * Description: Shariff provides share buttons that respect the privacy of your visitors and follow the General Data Protection Regulation (GDPR).
- * Version: 4.6.20
+ * Version: 4.6.21
  * Author: Jan-Peter Lambeck & 3UU
  * Author URI: https://wordpress.org/plugins/shariff/
  * License: MIT
@@ -36,7 +36,7 @@ $shariff3uu = array_merge( $shariff3uu_basic, $shariff3uu_design, $shariff3uu_ad
  */
 function shariff3uu_update() {
 	// Adjust code version.
-	$code_version = '4.6.20';
+	$code_version = '4.6.21';
 
 	// Get basic options.
 	$shariff3uu_basic = (array) get_option( 'shariff3uu_basic' );
@@ -144,6 +144,22 @@ if ( is_admin() ) {
 	include dirname( __FILE__ ) . '/admin/admin-menu.php';
 	// Include admin_notices.php.
 #	include dirname( __FILE__ ) . '/admin/admin-notices.php';
+
+	// Generic admin notice slot: updates.php sets the message, dismiss deletes it permanently.
+	if ( get_option( 'shariff3uu_admin_notice' ) ) {
+		add_action( 'admin_notices', function() {
+			if ( isset( $_GET['shariff_dismiss_notice'] ) && check_admin_referer( 'shariff_dismiss_notice' ) ) {
+				delete_option( 'shariff3uu_admin_notice' );
+				return;
+			}
+			$dismiss_url = wp_nonce_url( add_query_arg( 'shariff_dismiss_notice', '1' ), 'shariff_dismiss_notice' );
+			echo '<div class="notice notice-warning"><p>'
+				. '<strong>Shariff Wrapper</strong> '
+				. esc_html( get_option( 'shariff3uu_admin_notice' ) )
+				. ' &nbsp;<a href="' . esc_url( $dismiss_url ) . '">' . esc_html__( 'Dismiss', 'shariff' ) . '</a>'
+				. '</p></div>';
+		} );
+	}
 }
 
 /** Custom meta box */
@@ -1222,10 +1238,10 @@ function shariff3uu_render( $atts ) {
 			$share_counts['total'] = 0;
 		}
 		if ( 0 === $share_counts['total'] && array_key_exists( 'headline_zero', $atts ) && ! empty( $atts['headline_zero'] ) ) {
-			$atts['headline_zero'] = str_replace( '%total', '<span class="shariff-total">' . absint( $share_counts['total'] ) . '</span>', $atts['headline_zero'] );
+			$atts['headline_zero'] = wp_kses( str_replace( '%total', '<span class="shariff-total">' . absint( $share_counts['total'] ) . '</span>', $atts['headline_zero'] ), $GLOBALS['allowed_tags'] );
 			$output               .= '<div class="ShariffHeadline">' . $atts['headline_zero'] . '</div>';
 		} else {
-			$atts['headline'] = str_replace( '%total', '<span class="shariff-total">' . absint( $share_counts['total'] ) . '</span>', $atts['headline'] );
+			$atts['headline'] = wp_kses( str_replace( '%total', '<span class="shariff-total">' . absint( $share_counts['total'] ) . '</span>', $atts['headline'] ), $GLOBALS['allowed_tags'] );
 			$output          .= '<div class="ShariffHeadline">' . $atts['headline'] . '</div>';
 		}
 	}
@@ -1343,9 +1359,9 @@ function shariff3uu_render( $atts ) {
 						$dynamic_css .= $css;
 					}
 					// Border radius?
-					if ( array_key_exists( 'borderradius', $atts ) && array_key_exists( 'theme', $atts ) && 'round' === $atts['theme'] ) {
+					if ( array_key_exists( 'borderradius', $atts ) && array_key_exists( 'theme', $atts ) && 'round' === $atts['theme'] && is_numeric( $atts['borderradius'] ) ) {
 						$output .= ' shariff-borderradius';
-						$css     = '.shariff .shariff-buttons.theme-round .shariff-borderradius{border-radius:' . $atts['borderradius'] . '%}';
+						$css     = '.shariff .shariff-buttons.theme-round .shariff-borderradius{border-radius:' . absint( $atts['borderradius'] ) . '%}';
 						if ( false === strpos( $dynamic_css, $css ) ) {
 							$dynamic_css .= $css;
 						}

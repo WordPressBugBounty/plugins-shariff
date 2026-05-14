@@ -33,6 +33,9 @@ if ( is_multisite() ) {
 			delete_option( 'shariff3uu_advanced' );
 			delete_option( 'shariff3uu_mailform' );
 			delete_option( 'shariff3uu_statistic' );
+			delete_option( 'shariff3uu_admin_notice' );
+			// Delete user meta.
+			delete_metadata( 'user', 0, 'shariff3UU_ignore_notice', '', true );
 			// Purge transients.
 			shariff3uu_purge_transients();
 			// Remove cron job.
@@ -56,6 +59,9 @@ if ( is_multisite() ) {
 	delete_option( 'shariff3uu_advanced' );
 	delete_option( 'shariff3uu_mailform' );
 	delete_option( 'shariff3uu_statistic' );
+	delete_option( 'shariff3uu_admin_notice' );
+	// Delete user meta.
+	delete_metadata( 'user', 0, 'shariff3UU_ignore_notice', '', true );
 	// Purge transients.
 	shariff3uu_purge_transients();
 	// Remove cron job.

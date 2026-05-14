@@ -308,6 +308,15 @@ if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['ver
 
 
 /**
+ * Migration < 4.6.21
+ * Security fix: re-sanitize headline after %total replacement.
+ */
+if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['version'], '4.6.21' ) ) {
+	update_option( 'shariff3uu_admin_notice', '4.6.21: A security fix was applied to headline sanitization. Please review your headline settings and any use of the %total placeholder.' );
+	$shariff3uu['version'] = '4.6.21';
+}
+
+/**
  * General tasks we do on every update, like clean up transients and so on.
  */
 

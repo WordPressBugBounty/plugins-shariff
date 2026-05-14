@@ -4,7 +4,7 @@ Tags: Shariff, GDPR, DSGVO, share buttons, sharing
 Requires at least: 4.9
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 4.6.20
+Stable tag: 4.6.21
 License: MIT
 License URI: http://opensource.org/licenses/mit
 
@@ -149,6 +149,14 @@ These are bugs or unexpected glitches that we know of, but that do not have an i
 - If the first post on the start page is password protected and Shariff is disabled on protected posts, a widget at the end of the loop will not be rendered.
 
 == Changelog ==
+
+= 4.6.21 =
+- headline/headline_zero: wp_kses() now runs after str_replace('%total', ...) to prevent
+attribute-context injection where %total inside an HTML attribute could break quote
+structure after the span replacement. Many thanks to Chloe from Wordfence
+and Muhammad Yudha to find amd fix this problem!
+- borderradius AMP branch: add missing is_numeric() check and absint() cast, consistent
+  with the non-AMP branch, to prevent CSS injection into dynamic_css
 
 = 4.6.20 =
 - removed useless init for translationk
