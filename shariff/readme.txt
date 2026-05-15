@@ -4,7 +4,7 @@ Tags: Shariff, GDPR, DSGVO, share buttons, sharing
 Requires at least: 4.9
 Requires PHP: 7.4
 Tested up to: 6.9
-Stable tag: 4.6.21
+Stable tag: 4.6.22
 License: MIT
 License URI: http://opensource.org/licenses/mit
 
@@ -149,6 +149,12 @@ These are bugs or unexpected glitches that we know of, but that do not have an i
 - If the first post on the start page is password protected and Shariff is disabled on protected posts, a widget at the end of the loop will not be rendered.
 
 == Changelog ==
+
+= 4.6.22 =
+- fix: add_after/add_before checkbox values were incorrectly stored as strings
+  instead of integers since 4.6.18 (sanitize_key() instead of absint()), causing
+  the strict 1 === comparisons to fail silently and share buttons to disappear
+  from posts/pages. Includes a one-time migration to repair existing installations.
 
 = 4.6.21 =
 - headline/headline_zero: wp_kses() now runs after str_replace('%total', ...) to prevent

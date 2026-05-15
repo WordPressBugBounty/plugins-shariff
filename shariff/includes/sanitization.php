@@ -44,15 +44,11 @@ function shariff3uu_basic_sanitize( $input ) {
 		$valid['services'] = trim( preg_replace( '/[^A-Za-z|]/', '', sanitize_text_field( strip_hackers($input['services']) ) ), '|' );
 	}
         if ( isset( $input['add_after'] ) && is_array( $input['add_after'] ) ) {
-          // check all array elements with sanitize_key()
-          $valid['add_after'] = array_map( 'sanitize_key', $input['add_after'] );
-          // remove empty
+          $valid['add_after'] = array_map( 'absint', $input['add_after'] );
           $valid['add_after'] = array_filter( $valid['add_after'] );
         }
         if ( isset( $input['add_before'] ) && is_array( $input['add_before'] ) ) {
-          // check all array elements with sanitize_key()
-          $valid['add_before'] = array_map( 'sanitize_key', $input['add_before'] );
-          // remove empty 
+          $valid['add_before'] = array_map( 'absint', $input['add_before'] );
           $valid['add_before'] = array_filter( $valid['add_before'] );
         }
 	if ( isset( $input['disable_on_protected'] ) ) {

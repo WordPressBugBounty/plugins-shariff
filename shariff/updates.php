@@ -317,6 +317,22 @@ if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['ver
 }
 
 /**
+ * Migration < 4.6.22
+ * Fix add_after/add_before values incorrectly stored as strings instead of integers
+ * since 4.6.18 introduced sanitize_key() instead of absint() for these checkbox values.
+ * The strict 1 === comparisons in shariff.php require integers.
+ */
+if ( isset( $shariff3uu['version'] ) && -1 === version_compare( $shariff3uu['version'], '4.6.22' ) ) {
+	foreach ( array( 'add_after', 'add_before' ) as $key ) {
+		if ( isset( $shariff3uu_basic[ $key ] ) && is_array( $shariff3uu_basic[ $key ] ) ) {
+			$shariff3uu_basic[ $key ] = array_map( 'absint', $shariff3uu_basic[ $key ] );
+			$shariff3uu_basic[ $key ] = array_filter( $shariff3uu_basic[ $key ] );
+		}
+	}
+	$shariff3uu['version'] = '4.6.22';
+}
+
+/**
  * General tasks we do on every update, like clean up transients and so on.
  */
 

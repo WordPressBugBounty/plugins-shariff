@@ -2,6 +2,12 @@
 
 == Changelog ==
 
+= 4.6.22 =
+- fix: add_after/add_before checkbox values were incorrectly stored as strings
+  instead of integers since 4.6.18 (sanitize_key() instead of absint()), causing
+  the strict 1 === comparisons to fail silently and share buttons to disappear
+  from posts/pages. Includes a one-time migration to repair existing installations.
+
 = 4.6.21 =
 - headline/headline_zero: wp_kses() now runs after str_replace('%total', ...) to prevent
 attribute-context injection where %total inside an HTML attribute could break quote
